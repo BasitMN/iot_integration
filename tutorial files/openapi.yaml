@@ -1,0 +1,67 @@
+openapi: 3.0.0
+info:
+  title: IoT Sensor API
+  description: Ett enkelt API för att ta emot och hämta sensordata, använt i Lektion 07.
+  version: 1.0.0
+
+paths:
+  /sensor-data:
+    post:
+      summary: Skicka sensordata
+      description: Tar emot mätvärden från en (mockad eller fysisk) sensor.
+      requestBody:
+        required: true
+        content:
+          application/json:
+            schema:
+              $ref: '#/components/schemas/SensorReading'
+      responses:
+        '200':
+          description: Data sparad
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  status:
+                    type: string
+                    example: "saved"
+        '400':
+          description: Ogiltigt format
+
+  /temperature:
+    get:
+      summary: Hämta temperaturhistorik
+      description: Returnerar en lista med alla sparade temperaturmätningar från databasen.
+      responses:
+        '200':
+          description: En lista med mätvärden
+          content:
+            application/json:
+              schema:
+                type: array
+                items:
+                  $ref: '#/components/schemas/SensorReading'
+
+components:
+  schemas:
+    SensorReading:
+      type: object
+      required:
+        - device
+        - temp
+      properties:
+        device:
+          type: string
+          description: Unikt ID för sensorn
+          example: "sensor-alfa-1"
+        temp:
+          type: number
+          format: float
+          description: Temperatur i Celsius
+          example: 22.5
+        timestamp:
+          type: string
+          format: date-time
+          description: Tidpunkt för mätningen (valfritt vid inskick, sätts av servern)
+          readOnly: true
